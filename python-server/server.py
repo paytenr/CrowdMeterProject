@@ -9,27 +9,28 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-face_counter = 0
+people_counter = 0
 
 @app.post("/simulate")
 def simulate_face():
-    global face_counter
-    face_counter += 1
-    return {"faces_detected": 1, "total": face_counter}
+    global people_counter
+    people_counter += 1
+    return {"people_detected": 1, "total": people_counter}
 
 @app.post("/motion")
 def motion_detected():
-    global face_counter
-    face_counter += 1
-    return {"faces_detected": 1, "total": face_counter}
+    global people_counter
+    people_counter += 1
+    return {"people_detected": 1, "total": people_counter}
 
 @app.get("/total")
 def get_total():
-    return {"total": face_counter}
+    return {"total": people_counter}
 
 #reset detections
 @app.post("/reset")
 def reset_counter():
-    global face_counter
-    face_counter = 0
-    return{"total": face_counter}
+    global people_counter
+    people_counter = 0
+
+    return{"total": people_counter}
