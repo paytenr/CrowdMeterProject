@@ -1,19 +1,35 @@
 from fastapi import FastAPI
-import cv2
+from fastapi.middleware.cors import CORSMiddleware
 
 app = FastAPI()
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=[""],  # allow JavaFX to call server
+    allow_methods=[""],
+    allow_headers=["*"],
+)
 
-@app.get("/")
-def home():
-    return {"message": "Python server is live"}
+face_counter = 0
 
-@app.get("/detect")
-def detect():
-    cam = cv2.VideoCapture(0)
-    success, frame = cam.read()
-    cam.release()
+@app.post("/simulate")
+def simulate_face():
+    global face_counter
+    face_counter += 1
+    return {"faces_detected": 1, "total": face_counter}
 
-    if not success:
-        return {"error"}
-    
-    return {"faces_dectected": "placeholder"}
+@app.post("/motion")
+def motion_detected():
+    global face_counter
+    face_counter += 1
+    return {"faces_detected": 1, "total": face_counter}
+
+@app.get("/total")
+def get_total():
+    return {"total": face_counter}
+
+#reset detections
+@app.post("/reset")
+def reset_counter():
+    global face_counter
+    face_counter = 0
+    return{"total": face_counter}
