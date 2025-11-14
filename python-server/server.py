@@ -4,6 +4,7 @@ import imutils
 import time
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+from py4j.java_gateway import JavaGateway, GatewayParameters
 
 app = FastAPI()
 app.add_middleware(
@@ -11,6 +12,14 @@ app.add_middleware(
     allow_origins=[""],  # allow JavaFX to call server
     allow_methods=[""],
     allow_headers=["*"],
+    port = 25533
+    gateway = JavaGateway(gateway_parameters = GatewayParameters(port = port))
+    msgObjectFromJavaApp = gateway.entry_point
+    print(msgObjectFromJavaApp.Message())
+
+    # Shutdown the Java server when done
+    gateway.shutdown()
+    print("GatewayServer stopped from Python.")
 )
 
 people_counter = 0
@@ -134,3 +143,4 @@ def reset_counter():
     face_counter = 0
 
     return{"total": face_counter}
+
