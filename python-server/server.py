@@ -14,8 +14,9 @@ people_counter = 0
 @app.post("/simulate")
 def simulate_face():
     global people_counter
-    people_counter += 1
-    return {"people_detected": 1, "total": people_counter}
+    people_counter += 10
+    return {"people_detected": 10, "total": people_counter}
+    
 
 @app.post("/motion")
 def motion_detected():
@@ -34,3 +35,4 @@ def reset_counter():
     people_counter = 0
 
     return{"total": people_counter}
+
