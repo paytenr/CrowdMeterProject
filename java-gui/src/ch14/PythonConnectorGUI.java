@@ -1,61 +1,43 @@
 package ch14;
 
 import javafx.application.Application;
+import javafx.application.Platform;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 
-import java.io.BufferedReader;
-import java.io.InputStreamReader;
-import java.io.OutputStream;
-import java.net.HttpURLConnection;
-import java.net.URL;
-import java.io.*;
 import py4j.GatewayServer;
 
 public class PythonConnectorGUI extends Application {
-    public String Message() { 
-    	return "Hello world Jayden"; 
-    	}
+
     private Label totalLabel = new Label("Total detections: 0");
+
+    // Interface Python implements to send data to Java
+    public interface PyActions {
+        void sendResult(String msg);
+    }
+
+    // Python will call this method
+    public void sendResult(String msg) {
+        System.out.println("[Java] Python says: " + msg);
+
+        // Update JavaFX label safely on UI thread
+        Platform.runLater(() -> totalLabel.setText("Total detections: " + msg));
+    }
 
     @Override
     public void start(Stage primaryStage) {
         Button simulateButton = new Button("Simulate Person");
+        simulateButton.setOnAction(e -> totalLabel.setText("Total detections: 1"));
 
-        simulateButton.setOnAction(e -> {
-                StringBuilder content = new StringBuilder();
-                String line;
-                while ((line = in.readLine()) != null) {
-                    content.append(line);
-                }
-                
-                // crude parsing for demo
-                String json = content.toString();
-                String total = json.replaceAll("\n+", ""); // get digits
-                totalLabel.setText("Total detections: " + total);
-
-             
-        });
-        
         Button resetButton = new Button("Reset Counter");
-
-        resetButton.setOnAction(e -> {
-                StringBuilder content = new StringBuilder();
-                String line;
-                while ((line = in.readLine()) != null) {
-                    content.append(line);
-                }
-                totalLabel.setText("Total detections: 0"); // reset label locally
-
-             
-        });
-
+        resetButton.setOnAction(e -> totalLabel.setText("Total detections: 0"));
 
         VBox root = new VBox(10, simulateButton, resetButton, totalLabel);
         root.setStyle("-fx-padding: 20;");
+
         Scene scene = new Scene(root, 300, 150);
         primaryStage.setTitle("Face Detector Demo");
         primaryStage.setScene(scene);
@@ -63,15 +45,25 @@ public class PythonConnectorGUI extends Application {
     }
 
     public static void main(String[] args) {
-        launch(args);
-        GatewayServer g = new GatewayServer(new GFG(), 25533);
-        g.start();
-        System.out.println("Gateway Server Started");
-        
-        Runtime.getRuntime().addShutdownHook(new Thread(() -> {
-            g.shutdown();
-            System.out.println("GatewayServer stopped.");
-        }));
-    }
 
-}
+        PythonConnectorGUI app = new PythonConnectorGUI();
+
+        // Declare port first
+        int port = 25333;
+
+        // Start Java GatewayServer
+        GatewayServer server = new GatewayServer(app, port);
+        server.start();
+        System.out.println("[Java] GatewayServer started on port " + port);
+
+        // Launch JavaFX GUI
+        launch(args);
+        
+        // Shutdown hook
+        Runtime.getRuntime().addShutdownHook(new Thread(() -> {
+            server.shutdown();
+            System.out.println("[Java] GatewayServer stopped, port freed");
+        }));
+
+    }
+   }
