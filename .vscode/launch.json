@@ -1,0 +1,22 @@
+{
+    // Use IntelliSense to learn about possible attributes.
+    // Hover to view descriptions of existing attributes.
+    // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "type": "java",
+            "name": "LoginController",
+            "request": "launch",
+            "mainClass": "hellofx.LoginController",
+            "projectName": "HelloFX_6c660a7a"
+        },
+        {
+            "type": "java",
+            "name": "Launch App",
+            "request": "launch",
+            "mainClass": "hellofx.Main",
+            "vmArgs": "--module-path C:/javafx/openjfx-21.0.10_windows-x64_bin-sdk/javafx-sdk-21.0.10/lib --add-modules javafx.controls,javafx.fxml"
+        }
+    ]
+}
