@@ -1,13 +1,8 @@
 import cv2
 import imutils
 import time
-from py4j.java_gateway import JavaGateway, CallbackServerParameters
 
-# Connect to Java Gateway (assumes Java GatewayServer is running)
-gateway = JavaGateway(callback_server_parameters=CallbackServerParameters())
-java_app = gateway.entry_point  # Java GUI object
-
-# Motion detector setup
+# Motion detector setup!
 capture = cv2.VideoCapture(0)
 if not capture.isOpened():
     print("Error: Camera failed to open. Check macOS Camera permissions!")
@@ -109,6 +104,11 @@ try:
 
         if cv2.waitKey(1) & 0xFF == ord('q'):
             break
+        with open("count.txt", "w") as f:
+            f.write(str(count))
+
+        print("Updated count:", count)
+        time.sleep(1)
 
 finally:
     print("Final count:", count)
